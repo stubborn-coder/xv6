@@ -201,3 +201,19 @@ char* itoa(int num, char* str, int base)
 	
     return str; 
 } 
+
+void concat (char* s1, char* s2, char* s3){
+ //char * s3 = malloc( sizeof(char) * (strlen(s1) + strlen(s2)+1));
+
+ int i = 0;
+  for(i = 0; i < strlen(s1);i++){
+    *(s3+i) = *(s1+i);
+  }
+
+  for(; i < strlen(s2)+ strlen(s1);i++){
+    *(s3+i) = *(s2+i- strlen(s1));
+  }
+
+  *(s3+i) = 0;
+
+}

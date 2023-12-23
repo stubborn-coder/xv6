@@ -42,3 +42,4 @@ int memcmp(const void *, const void *, uint);
 void *memcpy(void *, const void *, uint);
 
 char* itoa(int num, char* str, int base);
+void concat (char* s1, char* s2, char* s3);

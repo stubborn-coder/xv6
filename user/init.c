@@ -24,7 +24,7 @@ main(void)
   dup(0);  // stderr
 
   for(;;){
-    printf("init: starting sh\n");
+    printf("init: starting login\n");
     pid = fork();
     if(pid < 0){
       printf("init: fork failed\n");
@@ -32,9 +32,9 @@ main(void)
     }
     if(pid == 0){
       //replace sh with login
-      
       exec("sh", argv);
-      printf("init: exec sh failed\n");
+      //exec("sh", argv);
+      printf("init: exec login failed\n");
       exit(1);
     }
 

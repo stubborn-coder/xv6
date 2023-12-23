@@ -40,17 +40,20 @@ test_getpwent(void)
   struct passwd *p = getpwent();
   if (p) {
     // printf(p->name);
-    // printf("%s:%d$%d:%d:%d:%s:%s:%s\n",
-    //     p->name,
-    //     p->p_passwd.hash,
-    //     p->p_passwd.rand,
-    //     p->uid,
-    //     p->gid,
-    //     p->gecos,  // user information
-    //     p->dir,    // home dir
-    //     p->shell   // shell program
-    //     );
-    free(p);
+    printf("%s:%s$%d$%d:%d:%d:%s:%s:%s\n",
+        p->name,
+        p->hashedPassword,
+        p->p_passwd.hash,
+        p->p_passwd.rand,
+        p->uid,
+        p->gid,
+        p->gecos,  // user information
+        p->dir,    // home dir
+        p->shell   // shell program
+        );
+    // free(p);
+  }else{
+    printf("did not return\n");
   }
 }
 
@@ -69,7 +72,8 @@ test_getpwuid(uint uid)
         p->dir,    // home dir
         p->shell   // shell program
         );
-    free(p);
+    // free(p);
+    // printf("free completed \n");
   } else {
     printf("entry with uid %d not found\n", uid);
   }
@@ -80,17 +84,20 @@ test_getpwnam(char *nam)
 {
   struct passwd *p = getpwnam(nam);
   if (p) {
-    printf("%s:%d$%d:%d:%d:%s:%s:%s\n",
-        p->name,
-        p->p_passwd.hash,
-        p->p_passwd.rand,
-        p->uid,
-        p->gid,
-        p->gecos,  // user information
-        p->dir,    // home dir
-        p->shell   // shell program
-        );
-    free(p);
+    printf("username found \n");
+    // printf("%s:%d$%d:%d:%d:%s:%s:%s\n",
+    //     p->name,
+    //     p->p_passwd.hash,
+    //     p->p_passwd.rand,
+    //     p->uid,
+    //     p->gid,
+    //     p->gecos,  // user information
+    //     p->dir,    // home dir
+    //     p->shell   // shell program
+    //     );
+    // free(p);
+    // printf("free completedd\n");
+
   } else {
     printf("entry with name %s not found\n", nam);
   }
@@ -113,21 +120,21 @@ main(int argc, char *argv[])
 {
   setpwent();
   test_putpwent("username", "password", 1000, 1001, "", "/home/username", "");
-//   test_putpwent("root",     "root",     0,    0,    "", "/home/root",     "");
-//   test_putpwent("john",     "abcd",     1005, 1006, "", "/home/john",     "");
+  test_putpwent("root",     "root",     0,    0,    "", "/home/root",     "");
+  test_putpwent("john",     "abcd",     1005, 1006, "", "/home/john",     "");
   endpwent();
 
   printf("test done\n");
   
   setpwent();
-  test_getpwent();
-  printf("\ntest2 complete\n");
-  endpwent();
-//   test_getpwent();
-// endpwent();
-//   test_getpwent();
-// endpwent();
 
+  test_getpwent();
+  test_getpwent();
+  test_getpwent();
+
+
+endpwent();
+printf("\ntest2 complete\n");
 //   printf("\n");
 
 //   test_setpwent();
@@ -146,11 +153,12 @@ main(int argc, char *argv[])
 //   printf("\n");
 
 //   test_setpwent();
-//   test_getpwuid(0);
-//   test_getpwuid(10);
+  test_getpwuid(0);
+  test_getpwuid(10);
 //   test_setpwent();
-//   test_getpwnam("john");
-//   test_getpwnam("mary");
+  test_getpwnam("john");
+  // printf("startnext \n");
+  test_getpwnam("mary");
 
 //   printf("\n");
 

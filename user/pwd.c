@@ -5,144 +5,162 @@
 #include "kernel/fcntl.h"
 
 #define MAXLEN 30
+#define MAXUSERS 5
 
 // Global variables
 int fd_passwd = 0;
+int users_count = 0;
+int setupUsers = 0;
+int currentReturnUser = 0;
+
+// there can only be 5 users in xv6
+struct passwd **UserDetails;
 
 // Reads one line from buf at position i into field
-int
-getpwfield(char *field, char *buf, int i)
+int getpwfield(char *field, char *buf, int i)
 {
   int c = 0;
-  while(buf[i] != ':' && buf[i] != '\n'){
+  while (buf[i] != ':' && buf[i] != '\n')
+  {
     field[c++] = buf[i++];
   }
   field[c] = '\0';
   return ++i;
 }
 
+void initializeUsers(void)
+{
+  if (setupUsers)
+    return;
+
+  struct stat *st = malloc(sizeof(struct stat));
+  UserDetails = malloc(sizeof(struct passwd) * MAXUSERS);
+
+  stat(PASSWD_PATH, st);
+
+  // printf("filesize: %d\n", st->size);
+
+  char buff[st->size];
+  // i will store the number of characters read
+  read(fd_passwd, buff, sizeof(buff));
+
+  // printf("i:%d\n", i);
+
+  char name[64];
+  char password[64];
+  char char_gid_t[64];
+  char char_uid_t[64];
+  char dir[256];
+  char shell[256];
+  char gecos[256];
+
+  int next = 0;
+  while (next < st->size)
+  {
+    users_count++;
+
+    next = getpwfield(name, buff, next);
+    // printf("username:%s\n", name);
+    // printf("next%d\n", next);
+    if (next >= st->size)
+      break;
+
+    next = getpwfield(password, buff, next);
+    // printf("password:%s\n", password);
+    // printf("next%d\n", next);
+    if (next >= st->size)
+    {
+      printf("break\n");
+      break;
+    }
+
+    next = getpwfield(char_gid_t, buff, next);
+    // printf("gid:%s\n", char_gid_t);
+    // printf("next%d\n", next);
+    if (next >= st->size)
+      break;
+
+    next = getpwfield(char_uid_t, buff, next);
+    // printf("uid:%s\n", char_uid_t);
+    // printf("next%d\n", next);
+    if (next >= st->size)
+      break;
+
+    next = getpwfield(gecos, buff, next);
+    // printf("gecos:%s\n", gecos);
+    // printf("next%d\n", next);
+    if (next >= st->size)
+      break;
+
+    next = getpwfield(dir, buff, next);
+    // printf("dir:%s\n", dir);
+    // printf("next:%d\n", next);
+    if (next >= st->size)
+      break;
+
+    next = getpwfield(shell, buff, next);
+    // printf("next:%d\n", next);
+    // printf("shell:%s\n", shell);
+    
+
+    // create the passwd object
+    struct passwd *p = malloc(sizeof(struct passwd));
+    p->name = malloc(sizeof(name) + 1);
+    strcpy(p->name, name);
+    p->hashedPassword = malloc(sizeof(password) + 1);
+    strcpy(p->hashedPassword, password);
+    p->shell = malloc(sizeof(shell));
+    strcpy(p->shell, shell);
+    p->dir = malloc(sizeof(dir));
+    strcpy(p->dir, dir);
+    p->gecos = malloc(sizeof(gecos));
+    strcpy(p->gecos, gecos);
+    p->uid = atoi(char_uid_t);
+    p->gid = atoi(char_gid_t);
+//1000 -> int 1000
+    // store in users array
+    *(UserDetails + users_count - 1) = p;
+    if (next >= st->size)
+      break;
+
+    if (users_count > MAXUSERS) break;
+  }
+
+  setupUsers = 1;
+}
+
 // Returns null on error
 struct passwd *
 getpwent(void)
 {
-  if(!fd_passwd)
-    setpwent(); // open passwd file if fd_passwd not set
+  if (!fd_passwd)
+  {
+    setpwent();
+  } // open passwd file if fd_passwd not set
 
-  // general procedure would be to:
-  //    1. get fields from passwd file entry
-
-    struct stat* st = malloc(sizeof(struct stat));
-
-    stat(PASSWD_PATH,st);
-
-    printf("filesize: %d\n", st->size);
-
-    char buff[st->size];
-    // i will store the number of characters read
-    int i = read(fd_passwd,buff,sizeof(buff));
-
-    printf("i:%d\n",i);
-
-    char name[128];
-    char password[128];
-    char char_gid_t[128];
-    char char_uid_t[128];
-    char dir[512];
-    char shell[512];
-    char gecos[512];
-
-    int next = 0;
-    while(next < st->size){
-        
-        next = getpwfield(name,buff,next);
-        printf("username:%s\n",name);
-        printf("next%d\n",next);
-        if(next >= st->size) break;
-        
-
-        next = getpwfield(password,buff,next);
-        printf("password:%s\n",password);
-        printf("next%d\n",next);
-        if(next >= st->size)
-        { 
-            printf("break\n");
-            break;
-        }
-
-        next = getpwfield(char_gid_t,buff,next);
-        printf("gid:%s\n",char_gid_t);
-        printf("next%d\n",next);   
-        if(next >= st->size) break;
-
-        next = getpwfield(char_uid_t,buff,next);
-        printf("uid:%s\n",char_uid_t);
-        printf("next%d\n",next);
-        if(next >= st->size) break;
-
-        next = getpwfield(gecos,buff,next);
-        printf("gecos:%s\n",gecos);
-        printf("next%d\n",next); 
-        if(next >= st->size) break;
-
-        next = getpwfield(dir,buff,next);
-        printf("dir:%s\n",dir);
-        printf("next:%d\n",next);
-        if(next >= st->size) break;
-
-
-        next = getpwfield(shell,buff,next);
-        printf("next:%d\n",next);
-        printf("shell:%s\n",shell);
-        if(next >= st->size) break;
-
-        
-       
-
-
-        
-        
-    }
-    
-
-    // printf("file:%s\n",buff);
-  
-  //    2. write fields into `struct passwd`
-  struct passwd *p = malloc(sizeof(struct passwd));
-  p->name = malloc(sizeof(name)+1);
-  
-  for(i = 0; i < strlen(name); i++){
-    //what is this magic?
-    //parenthesis is address
-    // * means get content
-    *(p->name +i) = name[i];
+  if(!setupUsers){
+    initializeUsers();
   }
-  *(p->name +i) = 0;
 
-  
+  int temp = currentReturnUser % users_count;
+  // printf("currentReturn Users:%d\n", currentReturnUser);
+  // printf("temp:%d\n", temp);
+  // printf("MAX users %d\n", MAXUSERS);
+  currentReturnUser++;
+  // printf("return value : %s\n", UserDetails[0]->name);
 
-  return p;
+  return UserDetails[temp];
 }
 
-void 
-setpwent(void)
+void setpwent(void)
 {
-  if((fd_passwd = open(PASSWD_PATH, O_CREATE | O_RDWR)) < 0)
-    printf("Unable to open file: %s, errno :%d\n", PASSWD_PATH, fd_passwd); 
+  if ((fd_passwd = open(PASSWD_PATH, O_CREATE | O_RDWR)) < 0)
+    printf("Unable to open file: %s, errno :%d\n", PASSWD_PATH, fd_passwd);
 
-
-
-//   if((fd_passwd = open(PASSWD_PATH, O_RDWR)) < 0){
-    // void return type means failure doesn't matter, I guess
-//     printf("Unable to open file: %s, errno :%d\n", PASSWD_PATH, fd_passwd); 
-//   }
   printf("file opened: %s, :%d\n", PASSWD_PATH, fd_passwd);
-  
-
-  
 }
 
-void 
-endpwent(void)
+void endpwent(void)
 {
   close(fd_passwd);
   fd_passwd = 0;
@@ -151,53 +169,71 @@ endpwent(void)
 struct passwd *
 getpwnam(const char *name)
 {
-    struct passwd *p = malloc(sizeof(struct passwd));
-    return p;
-  // TODO: implement `getpwnam`
+  initializeUsers();
+  int i = 0;
+  for (i = 0; i < users_count; i++)
+  {
+    printf("user:%s\n", UserDetails[i]->name);
+    if (strcmp(UserDetails[i]->name, name) == 0)
+    {
+      printf("returning user: %s\n",UserDetails[i]->name);
+      return UserDetails[i];
+    }
+  }
+  printf("return NULL\n");
+  return 0;
 }
 
 struct passwd *
 getpwuid(uint uid)
 {
 
-    struct passwd *p = malloc(sizeof(struct passwd));
-    return p;
-  // TODO: implement `getpwuid`
+  for (int i = 0; i < users_count; i++)
+  {
+    if (UserDetails[i]->uid == uid)
+    {
+      return UserDetails[i];
+    }
+  }
+  return 0;
 }
 
 // Write given passwd entry into passwd file
-int 
-putpwent(const struct passwd *p)
+int putpwent(const struct passwd *p)
 {
+  if(users_count > MAXUSERS){
+    write(1,"Max users reached\n",18);
+    return 0;
+  }
 
-  write(fd_passwd,p->name, strlen(p->name));
-  write(fd_passwd,":", 1);
+  write(fd_passwd, p->name, strlen(p->name));
+  write(fd_passwd, ":", 1);
 
-  write(fd_passwd,p->hashedPassword, strlen(p->hashedPassword));
-  write(fd_passwd,":", 1);
-  
-  char *gid_buff = malloc(sizeof(char)*8);
-  char *uid_buff = malloc(sizeof(char)*8);
-  
-  itoa(p->gid,gid_buff,10);
-  itoa(p->uid,uid_buff,10);
-  
-  write(fd_passwd,gid_buff, strlen(gid_buff));
-  write(fd_passwd,":", 1);
-  
-  write(fd_passwd,uid_buff, strlen(uid_buff));
-  write(fd_passwd,":", 1);
-  
-  write(fd_passwd,p->gecos, strlen(p->gecos));
-  write(fd_passwd,":", 1);
+  write(fd_passwd, p->hashedPassword, strlen(p->hashedPassword));
+  write(fd_passwd, ":", 1);
 
-  write(fd_passwd,p->dir, strlen(p->dir));
-  write(fd_passwd,":", 1);
+  char *gid_buff = malloc(sizeof(char) * 8);
+  char *uid_buff = malloc(sizeof(char) * 8);
 
-  write(fd_passwd,p->shell, strlen(p->shell));
-   write(fd_passwd,":", 1);
+  itoa(p->gid, gid_buff, 10);
+  itoa(p->uid, uid_buff, 10);
 
-//   write(fd_passwd,"\n", 1);
+  write(fd_passwd, gid_buff, strlen(gid_buff));
+  write(fd_passwd, ":", 1);
+
+  write(fd_passwd, uid_buff, strlen(uid_buff));
+  write(fd_passwd, ":", 1);
+
+  write(fd_passwd, p->gecos, strlen(p->gecos));
+  write(fd_passwd, ":", 1);
+
+  write(fd_passwd, p->dir, strlen(p->dir));
+  write(fd_passwd, ":", 1);
+
+  write(fd_passwd, p->shell, strlen(p->shell));
+  write(fd_passwd, ":", 1);
+
+  //   write(fd_passwd,"\n", 1);
 
   return 1;
 }
