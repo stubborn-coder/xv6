@@ -9,7 +9,7 @@
 #include "user/user.h"
 #include "kernel/fcntl.h"
 
-char *argv[] = { "sh", 0 };
+char *argv[] = { "login", 0 };
 
 int
 main(void)
@@ -32,7 +32,7 @@ main(void)
     }
     if(pid == 0){
       //replace sh with login
-      exec("sh", argv);
+      exec("login", argv);
       //exec("sh", argv);
       printf("init: exec login failed\n");
       exit(1);

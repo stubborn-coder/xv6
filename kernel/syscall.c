@@ -19,6 +19,8 @@ fetchaddr(uint64 addr, uint64 *ip)
   return 0;
 }
 
+
+
 // Fetch the nul-terminated string at addr from the current process.
 // Returns length of string, not including nul, or -1 for error.
 int
@@ -101,6 +103,10 @@ extern uint64 sys_unlink(void);
 extern uint64 sys_link(void);
 extern uint64 sys_mkdir(void);
 extern uint64 sys_close(void);
+extern uint64 sys_getuid(void);
+extern uint64 sys_setuid(void);
+extern uint64 sys_getgid(void);
+extern uint64 sys_setgid(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -126,6 +132,11 @@ static uint64 (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+[SYS_getuid]  sys_getuid,
+[SYS_setuid]  sys_setuid,
+[SYS_getgid]  sys_getgid,
+[SYS_setgid]  sys_setgid,
+
 };
 
 void

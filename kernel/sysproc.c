@@ -5,6 +5,7 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "syscall.h"
 
 uint64
 sys_exit(void)
@@ -19,6 +20,56 @@ uint64
 sys_getpid(void)
 {
   return myproc()->pid;
+}
+
+// TODO: write getuid, setuid, getgid, setgid
+//done 
+uid_t sys_getuid(void){
+
+  return myproc()->uid;
+}
+
+uint64 sys_setuid(){
+
+  int uid = -1;
+
+  //load a0 into uid
+	argint(0, &uid);
+		if(uid == -1){
+      return -1;
+    }
+
+	struct proc* currProc=myproc();
+	if(currProc->uid != 0)
+		return -1;
+	
+	currProc->uid=uid;
+		
+	return 1;
+}
+
+uint64 sys_setgid(void){
+
+  int gid = -1;
+
+  //load a0 into uid
+	argint(0, &gid);
+		if(gid == -1){
+      return -1;
+    }
+
+	struct proc* currProc=myproc();
+	if(currProc->gid != 0)
+		return -1;
+	
+	currProc->gid=gid;
+		
+	return 1;
+}
+
+gid_t sys_getgid(void){
+  
+  return myproc()->gid;
 }
 
 uint64

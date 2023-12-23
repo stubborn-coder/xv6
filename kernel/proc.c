@@ -89,10 +89,28 @@ myproc(void)
   return p;
 }
 
+//TODO: setuid, setgid
+int setuid(uid_t uid){
+  //get the current proc
+  struct proc *p = myproc();
+  p->uid = uid;
+  return 1;
+}
+
+int setgid(uid_t gid){
+  //get the current proc
+  struct proc *p = myproc();
+  p->gid = gid;
+  return 1;
+}
+
+
+
 int
 allocpid()
 {
   int pid;
+  
   
   acquire(&pid_lock);
   pid = nextpid;
@@ -311,6 +329,8 @@ fork(void)
   safestrcpy(np->name, p->name, sizeof(p->name));
 
   pid = np->pid;
+
+   // TODO: ensure that child process inherits UID, GID from parent
 
   release(&np->lock);
 

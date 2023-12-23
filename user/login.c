@@ -100,8 +100,24 @@ int main(void)
 
     // TODO: upon successful authentication: set process UID, GID to identity
     // dk how to do that
-    // TODO: upon successful authentication: execute shell
-    // exec("sh");
+    int print_gid = getgid();
+    printf("gid:%d\n", print_gid);
+    int print_pid = getuid();
+    printf("uid:%d\n", print_pid);
+
+    
+
+    // setuid(find_username->uid);
+    // setgid(find_username->gid);
+    setuid(69);
+    setgid(420);
+
+    print_gid = getgid();
+    printf("gid:%d\n", print_gid);
+    print_pid = getuid();
+    printf("uid:%d\n", print_pid);
+
+    // upon successful authentication: execute shell
     printf("exiting to sh\n");
     exec("sh", argv);
 }

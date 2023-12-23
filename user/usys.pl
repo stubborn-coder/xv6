@@ -36,3 +36,7 @@ entry("getpid");
 entry("sbrk");
 entry("sleep");
 entry("uptime");
+entry("getuid");
+entry("setuid");
+entry("getgid");
+entry("setgid");

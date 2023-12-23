@@ -1,5 +1,13 @@
 struct stat;
 
+// naive user struct
+// will not even think about process switching for now
+// struct user {
+// 	uint uid;
+// 	uint gid;
+// } u;
+
+
 // system calls
 int fork(void);
 int exit(int) __attribute__((noreturn));
@@ -22,6 +30,11 @@ int getpid(void);
 char* sbrk(int);
 int sleep(int);
 int uptime(void);
+//new system calls
+// int getuid(void);
+int setuid(uid_t uid);
+// int getgid(void);
+int setgid(gid_t gid);
 
 // ulib.c
 int stat(const char*, struct stat*);
