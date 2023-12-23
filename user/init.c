@@ -31,6 +31,8 @@ main(void)
       exit(1);
     }
     if(pid == 0){
+      //replace sh with login
+      
       exec("sh", argv);
       printf("init: exec sh failed\n");
       exit(1);

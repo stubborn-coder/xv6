@@ -6,14 +6,15 @@ struct details {
   uint rand;
 };
 struct passwd {
-  // TODO: implement fields into passwd
+
   char    *name;   //User's login name. 
   struct details p_passwd; //contains *hash and rand
   uid_t    uid;   //Numerical user ID. 
-  gid_t    gid ;   //Numerical group ID. 
-  char *gecos;
+  gid_t    gid;   //Numerical group ID. privleges
+  char *gecos;  // user details
   char    *dir;    //Initial working directory. 
   char    *shell; //Program to use as shell. 
+  char *hashedPassword; // hashedpassword
   
  
 };

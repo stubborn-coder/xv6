@@ -28,7 +28,8 @@ test_putpwent(char *name, char *password, uint uid, uint gid, char *gecos, char 
     gid,
     gecos,
     dir,
-    shell
+    shell,
+    password
   };
   putpwent(&p);
 }
@@ -38,16 +39,17 @@ test_getpwent(void)
 {
   struct passwd *p = getpwent();
   if (p) {
-    printf("%s:%d$%d:%d:%d:%s:%s:%s\n",
-        p->name,
-        p->p_passwd.hash,
-        p->p_passwd.rand,
-        p->uid,
-        p->gid,
-        p->gecos,  // user information
-        p->dir,    // home dir
-        p->shell   // shell program
-        );
+    // printf(p->name);
+    // printf("%s:%d$%d:%d:%d:%s:%s:%s\n",
+    //     p->name,
+    //     p->p_passwd.hash,
+    //     p->p_passwd.rand,
+    //     p->uid,
+    //     p->gid,
+    //     p->gecos,  // user information
+    //     p->dir,    // home dir
+    //     p->shell   // shell program
+    //     );
     free(p);
   }
 }
@@ -111,16 +113,20 @@ main(int argc, char *argv[])
 {
   setpwent();
   test_putpwent("username", "password", 1000, 1001, "", "/home/username", "");
-  test_putpwent("root",     "root",     0,    0,    "", "/home/root",     "");
-  test_putpwent("john",     "abcd",     1005, 1006, "", "/home/john",     "");
+//   test_putpwent("root",     "root",     0,    0,    "", "/home/root",     "");
+//   test_putpwent("john",     "abcd",     1005, 1006, "", "/home/john",     "");
   endpwent();
 
   printf("test done\n");
   
   setpwent();
   test_getpwent();
+  printf("\ntest2 complete\n");
+  endpwent();
 //   test_getpwent();
+// endpwent();
 //   test_getpwent();
+// endpwent();
 
 //   printf("\n");
 
