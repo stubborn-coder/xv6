@@ -11,11 +11,11 @@ uint create_uid(void)
 {
   struct passwd *p;
   int uid = 0; // first user created will be root (uid 0)
-  while (((p = getpwuid(uid)) < 0))
+  while ((p = getpwuid(uid)))
   {
     // free(p);
     uid++;
-    printf("while:%d, %d\n", uid,((p = getpwuid(uid)) <0));
+    // printf("while:%d, %d\n", uid,((p = getpwuid(uid)) <0));
 
   }
   return uid;
@@ -43,11 +43,13 @@ int main(int argc, char *argv[])
 
   struct passwd *p = getpwnam(username_buf);
   // printf("user add:%d\n",p);
-  if(p < 0)
+  while(p)
   {
     printf("Username already exists please enter a new username.\n");
     printf("Please enter username: \n");
     read(0, username_buf, sizeof(username_buf));
+    username_buf[strlen(username_buf)-1] = 0;
+    p = getpwnam(username_buf);
   }
 
   // TODO: prompt for password

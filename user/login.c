@@ -84,6 +84,7 @@ int main(void)
     wait(0);
   }
 
+  
   // TODO: prompt for username
 
   char *username = malloc(sizeof(char) * 32);
@@ -93,15 +94,31 @@ int main(void)
 
   // TODO: prompt for password
 
-  char *password = malloc(sizeof(char) * 32);
-  printf("password: ");
+  
 
   // TODO: authenticate user given input
   // check username
 
   struct passwd *find_username = getpwnam(username);
   // printf("find_user_name:%d\n", find_username);
-  while (find_username > 0)
+
+  while (!find_username)
+  {
+
+    
+    printf("Username does not exists\n");
+    printf("username: ");
+    gets(username, 64);
+    username[strlen(username) - 1] = 0;
+    find_username = getpwnam(username);
+    // check for password
+    
+  }
+
+  char *password = malloc(sizeof(char) * 32);
+  printf("password: ");
+
+  while (find_username)
   {
 
     gets(password, 64);
@@ -115,6 +132,7 @@ int main(void)
     else
     {
       printf("correct password login successful \n");
+      
       break;
     }
   }
@@ -133,9 +151,9 @@ int main(void)
 
 
   print_gid = getgid();
-  // printf("gid:%d\n", print_gid);
+  printf("gid:%d\n", print_gid);
   print_pid = getuid();
-  // printf("uid:%d\n", print_pid);
+  printf("uid:%d\n", print_pid);
 
   // printf("no of users:%d\n", noOfUsers());
 
