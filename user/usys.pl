@@ -40,3 +40,4 @@ entry("getuid");
 entry("setuid");
 entry("getgid");
 entry("setgid");
+entry("hello");

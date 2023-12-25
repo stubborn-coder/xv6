@@ -24,3 +24,4 @@
 #define SYS_setuid 23
 #define SYS_getgid 24
 #define SYS_setgid 25
+#define SYS_hello  26

@@ -90,14 +90,14 @@ myproc(void)
 }
 
 //TODO: setuid, setgid
-int setuid(uid_t uid){
+int setuid2(uid_t uid){
   //get the current proc
   struct proc *p = myproc();
   p->uid = uid;
   return 1;
 }
 
-int setgid(uid_t gid){
+int setgid2(gid_t gid){
   //get the current proc
   struct proc *p = myproc();
   p->gid = gid;
@@ -331,6 +331,9 @@ fork(void)
   pid = np->pid;
 
    // TODO: ensure that child process inherits UID, GID from parent
+   
+  np->uid = p->uid;
+  np->gid = p->gid;
 
   release(&np->lock);
 

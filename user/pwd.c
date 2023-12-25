@@ -12,6 +12,7 @@ int fd_passwd = 0;
 int users_count = 0;
 int setupUsers = 0;
 int currentReturnUser = 0;
+struct passwd *currentLoggedInUser;
 
 // there can only be 5 users in xv6
 struct passwd **UserDetails;
@@ -32,9 +33,12 @@ void initializeUsers(void)
 {
   if (setupUsers)
     return;
-
+  //lock
+  currentLoggedInUser = malloc(sizeof(struct passwd));
   struct stat *st = malloc(sizeof(struct stat));
   UserDetails = malloc(sizeof(struct passwd) * MAXUSERS);
+
+  
 
   stat(PASSWD_PATH, st);
 
@@ -57,7 +61,7 @@ void initializeUsers(void)
   int next = 0;
   while (next < st->size)
   {
-    users_count++;
+    
 
     next = getpwfield(name, buff, next);
     // printf("username:%s\n", name);
@@ -101,7 +105,6 @@ void initializeUsers(void)
     next = getpwfield(shell, buff, next);
     // printf("next:%d\n", next);
     // printf("shell:%s\n", shell);
-    
 
     // create the passwd object
     struct passwd *p = malloc(sizeof(struct passwd));
@@ -117,28 +120,32 @@ void initializeUsers(void)
     strcpy(p->gecos, gecos);
     p->uid = atoi(char_uid_t);
     p->gid = atoi(char_gid_t);
-//1000 -> int 1000
-    // store in users array
-    *(UserDetails + users_count - 1) = p;
+    
+    //  store in users array
+    *(UserDetails + users_count) = p;
+    users_count++;
     if (next >= st->size)
       break;
 
-    if (users_count > MAXUSERS) break;
+    if (users_count > MAXUSERS)
+      break;
   }
-
+  // printf("end initializing \n");
   setupUsers = 1;
+  
 }
 
 // Returns null on error
 struct passwd *
 getpwent(void)
 {
-  if (!fd_passwd)
-  {
-    setpwent();
-  } // open passwd file if fd_passwd not set
+  // if (!fd_passwd)
+  // {
+  //   setpwent();
+  // } // open passwd file if fd_passwd not set
 
-  if(!setupUsers){
+  if (!setupUsers)
+  {
     initializeUsers();
   }
 
@@ -157,7 +164,7 @@ void setpwent(void)
   if ((fd_passwd = open(PASSWD_PATH, O_CREATE | O_RDWR)) < 0)
     printf("Unable to open file: %s, errno :%d\n", PASSWD_PATH, fd_passwd);
 
-  printf("file opened: %s, :%d\n", PASSWD_PATH, fd_passwd);
+  // printf("file opened: %s, :%d\n", PASSWD_PATH, fd_passwd);
 }
 
 void endpwent(void)
@@ -169,42 +176,61 @@ void endpwent(void)
 struct passwd *
 getpwnam(const char *name)
 {
-  initializeUsers();
+  if (!fd_passwd)
+  {
+    setpwent();
+  }
+  if (!setupUsers)
+  {
+    initializeUsers();
+  }
+  
   int i = 0;
   for (i = 0; i < users_count; i++)
   {
-    printf("user:%s\n", UserDetails[i]->name);
+    // printf("user:%s\n", UserDetails[i]->name);
     if (strcmp(UserDetails[i]->name, name) == 0)
     {
-      printf("returning user: %s\n",UserDetails[i]->name);
+      // printf("returning user:%s\n", UserDetails[i]->name);
+      endpwent();
       return UserDetails[i];
     }
   }
-  printf("return NULL\n");
+  // printf("return NULL\n");
+  endpwent();
   return 0;
 }
 
 struct passwd *
 getpwuid(uint uid)
 {
-
+  if (!fd_passwd)
+  {
+    setpwent();
+  }
+  initializeUsers();
   for (int i = 0; i < users_count; i++)
   {
     if (UserDetails[i]->uid == uid)
     {
+      // printf("returning user:%s\n", UserDetails[i]->name);
+      endpwent();
       return UserDetails[i];
     }
   }
+  endpwent();
   return 0;
 }
 
 // Write given passwd entry into passwd file
 int putpwent(const struct passwd *p)
 {
-  if(users_count > MAXUSERS){
-    write(1,"Max users reached\n",18);
+  if (users_count > MAXUSERS)
+  {
+    write(1, "Max users reached\n", 18);
     return 0;
   }
+  
 
   write(fd_passwd, p->name, strlen(p->name));
   write(fd_passwd, ":", 1);
@@ -233,7 +259,11 @@ int putpwent(const struct passwd *p)
   write(fd_passwd, p->shell, strlen(p->shell));
   write(fd_passwd, ":", 1);
 
-  //   write(fd_passwd,"\n", 1);
 
   return 1;
+}
+
+int noOfUsers(void)
+{
+  return users_count;
 }

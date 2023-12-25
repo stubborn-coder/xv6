@@ -14,6 +14,7 @@ _main()
   exit(0);
 }
 
+
 char*
 strcpy(char *s, const char *t)
 {
@@ -217,3 +218,5 @@ void concat (char* s1, char* s2, char* s3){
   *(s3+i) = 0;
 
 }
+
+//TODO: testing hello system call

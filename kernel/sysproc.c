@@ -27,6 +27,7 @@ sys_getpid(void)
 uid_t sys_getuid(void){
 
   return myproc()->uid;
+
 }
 
 uint64 sys_setuid(){
@@ -43,7 +44,8 @@ uint64 sys_setuid(){
 	if(currProc->uid != 0)
 		return -1;
 	
-	currProc->uid=uid;
+	// currProc->uid=uid;
+  setuid2(uid);
 		
 	return 1;
 }
@@ -62,7 +64,8 @@ uint64 sys_setgid(void){
 	if(currProc->gid != 0)
 		return -1;
 	
-	currProc->gid=gid;
+	// currProc->gid=gid;
+  setgid2(gid);
 		
 	return 1;
 }
@@ -139,4 +142,10 @@ sys_uptime(void)
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+uint64 sys_hello(void){
+  char *buffer = "hello\n";
+  printf(buffer);
+  return 1;
 }

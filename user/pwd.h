@@ -30,4 +30,5 @@ struct passwd *getpwnam(const char *);
 struct passwd *getpwuid(uint);
 // int getpwuid_r(uid_t, struct passwd *, char *, size_t, struct passwd **);
 int putpwent(const struct passwd *);
+int noOfUsers(void);
 

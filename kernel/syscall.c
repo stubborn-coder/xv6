@@ -107,6 +107,7 @@ extern uint64 sys_getuid(void);
 extern uint64 sys_setuid(void);
 extern uint64 sys_getgid(void);
 extern uint64 sys_setgid(void);
+extern uint64 sys_hello(void);
 
 // An array mapping syscall numbers from syscall.h
 // to the function that handles the system call.
@@ -136,6 +137,7 @@ static uint64 (*syscalls[])(void) = {
 [SYS_setuid]  sys_setuid,
 [SYS_getgid]  sys_getgid,
 [SYS_setgid]  sys_setgid,
+[SYS_hello] sys_hello,
 
 };
 

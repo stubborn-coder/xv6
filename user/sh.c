@@ -3,6 +3,8 @@
 #include "kernel/types.h"
 #include "user/user.h"
 #include "kernel/fcntl.h"
+#include "user/pwd.h"
+
 
 // Parsed command representation
 #define EXEC  1
@@ -147,7 +149,7 @@ main(void)
 {
   static char buf[100];
   int fd;
-
+  printf("sh process owned by: %d\n", getuid());
   // Ensure that three file descriptors are open.
   while((fd = open("console", O_RDWR)) >= 0){
     if(fd >= 3){
@@ -165,6 +167,13 @@ main(void)
         fprintf(2, "cannot cd %s\n", buf+3);
       continue;
     }
+    // if(buf[0]=='w' && buf[1]=='h'&& buf[2]=='o'&& buf[3]=='a' && buf[4]=='m'&& buf[5]=='i' ){
+    //   buf[6]= ' ';
+    //   struct passwd *currentUser = getpwuid(getuid());
+    //   printf("sh:%s\n", currentUser->name);
+    //   strcpy(&buf[7], currentUser->name);
+    // }
+    
     if(fork1() == 0)
       runcmd(parsecmd(buf));
     wait(0);
