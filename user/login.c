@@ -158,7 +158,7 @@ int main(void)
   // printf("no of users:%d\n", noOfUsers());
 
   // upon successful authentication: execute shell
-
+  exec("sh", argv);
   int pid = fork();
   if (pid < 0)
   {
@@ -173,7 +173,7 @@ int main(void)
     // setgroups(1, gids);
     setuid(find_username->uid);
     // chdir(uidtodir(uid));
-    exec("sh", argv);
+    
     printf("login: exec sh failed\n");
     exit(0);
   }

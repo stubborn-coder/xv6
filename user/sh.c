@@ -149,7 +149,7 @@ main(void)
 {
   static char buf[100];
   int fd;
-  printf("sh process owned by: %d\n", getuid());
+  // printf("sh process owned by: %d\n", getuid());
   // Ensure that three file descriptors are open.
   while((fd = open("console", O_RDWR)) >= 0){
     if(fd >= 3){
@@ -169,9 +169,25 @@ main(void)
     }
     // if(buf[0]=='w' && buf[1]=='h'&& buf[2]=='o'&& buf[3]=='a' && buf[4]=='m'&& buf[5]=='i' ){
     //   buf[6]= ' ';
-    //   struct passwd *currentUser = getpwuid(getuid());
-    //   printf("sh:%s\n", currentUser->name);
-    //   strcpy(&buf[7], currentUser->name);
+    //   // struct passwd *currentUser = getpwuid(getuid());
+    //   // printf("sh:%s\n", currentUser->name);
+    //   // strcpy(&buf[7], currentUser->name);
+    //   char *whoamiargv[] = {"whoami", 0};
+    //   exec("whoami",whoamiargv);
+    //   continue;
+    //   wait(0);
+      
+    // }
+    // if(buf[0]=='u' && buf[1]=='s'&& buf[2]=='e'&& buf[3]=='r' && buf[4]=='a'&& buf[5]=='d'&& buf[6]=='d' ){
+    //   buf[6]= ' ';
+    //   // struct passwd *currentUser = getpwuid(getuid());
+    //   // printf("sh:%s\n", currentUser->name);
+    //   // strcpy(&buf[7], currentUser->name);
+    //   char *useraddargv[] = {"", 0};
+    //   exec("useradd",useraddargv);
+    //   continue;
+    //   // wait(0);
+      
     // }
     
     if(fork1() == 0)

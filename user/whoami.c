@@ -9,13 +9,13 @@ int main(int argc, char *argv[])
 
   // initialize users
   // getpwent();
-
-  struct passwd *user = getpwuid(0);
+  
+  struct passwd *user = getpwuid(getuid());
   // printf("argc : %d", argc);
   // printf("number of users:%d\n", noOfUsers());
   printf("%s\n", user->name);
 
   //   printf("%s\n", user->name);
-  exit(0);
-  return 0;
+  // exit(0);
+  // return 0;
 }

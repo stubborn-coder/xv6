@@ -31,15 +31,15 @@ int getpwfield(char *field, char *buf, int i)
 
 void initializeUsers(void)
 {
-  if (setupUsers)
-    return;
-  //lock
+  // if (setupUsers)
+  //   return;
+  
   currentLoggedInUser = malloc(sizeof(struct passwd));
   struct stat *st = malloc(sizeof(struct stat));
   UserDetails = malloc(sizeof(struct passwd) * MAXUSERS);
 
   
-
+  users_count = 0;
   stat(PASSWD_PATH, st);
 
   // printf("filesize: %d\n", st->size);
@@ -225,11 +225,18 @@ getpwuid(uint uid)
 // Write given passwd entry into passwd file
 int putpwent(const struct passwd *p)
 {
-  if (users_count > MAXUSERS)
+  initializeUsers();
+  // printf("number of users %d\n",noOfUsers());
+  if (users_count >= MAXUSERS)
   {
     write(1, "Max users reached\n", 18);
+    
     return 0;
   }
+  // if(!fd_passwd) setpwent();
+  int count = 0;
+  struct passwd *temp[users_count];
+
   
 
   write(fd_passwd, p->name, strlen(p->name));
@@ -259,6 +266,7 @@ int putpwent(const struct passwd *p)
   write(fd_passwd, p->shell, strlen(p->shell));
   write(fd_passwd, ":", 1);
 
+  // endpwent();
 
   return 1;
 }

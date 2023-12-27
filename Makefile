@@ -142,7 +142,7 @@ UPROGS=\
 
 	
 
-fs.img: mkfs/mkfs README $(UPROGS) 
+fs.img: mkfs/mkfs README $(UPROGS) $U/password.txt
 	mkfs/mkfs fs.img README $(UPROGS) 
 
 -include kernel/*.d user/*.d
